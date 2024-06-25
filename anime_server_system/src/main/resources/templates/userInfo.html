@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户中心</title>
+    <style>
+
+        #app {
+            width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+
+        .info {
+            margin-bottom: 10px;
+        }
+
+        .info p {
+            margin: 0;
+            padding: 5px 0;
+        }
+
+        .info input[type="text"],
+        .info input[type="password"],
+        .info input[type="number"]{
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+
+        .info button {
+            padding: 5px 10px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .info button:hover {
+            background-color: #0056b3;
+        }
+
+        .change {
+            display: none;
+        }
+    </style>
+</head>
+<link rel="stylesheet" href="/css/header.css">
+<link rel="stylesheet" href="/css/body.css">
+<body>
+    <header>
+        <h5><a href="/ame/view/index">首页</a></h5>
+        <h5><a href="/ame/view/list">动画大全</a></h5>
+        <h5><a href="/ame/view/recommendation">获取推荐</a></h5>
+        <h5><a href="/ame/view/chat">聊天室</a></h5>
+        <h5><a href="/ame/view/userInfo">个人中心</a></h5>
+    </header>
+    <div id="app">
+        <div class="info">
+            <p>UID：<input type="text" readonly th:value="${user.userId}" id="uid"></p>
+            <p>用户名：<input type="text" readonly th:value="${user.username}" id="username"></p>
+            <p>密码：<input type="password" readonly th:value="${user.passwd}" id="old_passwd"></p>
+            <p>昵称：<input type="text" readonly th:value="${user.nickname}" id="old_nickname">
+            <p>年龄：<input type="text" readonly th:value="${user.age}" id="old_age"></p>
+            <p>性别：<input type="text" readonly th:value="${user.gender}" id="old_gender"></b></p><button  @click="show_1 = !show_1">修改个人信息</button>
+            <p><span class="change" v-if="show_1">
+                <p  v-if="show_1">输入原始密码：<input type="password" autocomplete="off" v-model="passwd_before" required></p>
+                <p v-if="show_1">输入新密码：<input type="password" v-model="passwd_1"></p>
+                <p v-if="show_1">输入确认密码：<input type="password" v-model="passwd_2"></p>
+                <p v-if="show_1">输入新昵称：<input type="text" v-model="user.nickname"></p>
+                <p v-if="show_1">输入新年龄：<input type="number" v-model="user.age"></p>
+                <p v-if="show_1">输入新性别：<input type="text" v-model="user.gender"></p>
+                <button v-if="show_1" @click="test">提交修改申请</button>
+            </span></p>
+
+        </div>
+    </div>
+</body>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/1.7.2/axios.js"></script>
+<script>
+    new Vue({
+        el:"#app",
+        data(){
+            return{
+                show_1:false,
+                user:{
+                    userId:document.getElementById("uid").value,
+                    username:document.getElementById("username").value,
+                    age:document.getElementById("old_age").value,
+                    passwd:null,
+                    nickname:document.getElementById("old_nickname").value,
+                    gender:document.getElementById("old_gender").value
+                },
+                old_passwd: document.getElementById('old_passwd').value,
+                passwd_before: '',
+                passwd_1: null,
+                passwd_2: null
+            }
+        },
+        methods:{
+            test(){
+                if(this.passwd_1!=null||this.passwd_2!=null){
+                    if(this.old_passwd!=this.passwd_before){
+                        alert("原密码与输入密码不一致，请重新输入")
+                    }else {
+                        if(this.passwd_1!==this.passwd_2){
+                            alert("确认密码不一致，请重试")
+                        }
+                        this.user.passwd=(this.passwd_1===this.passwd_2?this.passwd_2:null)
+                        if(this.user.passwd!=null){
+                            let _ = this
+                            axios.post("/ame/update",_.user).then(resp=>{
+                                alert(resp.data)
+                            })
+                        }
+                    }
+                }else{
+                    this.user.passwd=this.old_passwd
+                    let _ = this
+                    axios.post("/ame/update",_.user).then(resp=>{
+                        alert(resp.data)
+                    })
+                }
+            }
+        }
+    })
+</script>
+</html>

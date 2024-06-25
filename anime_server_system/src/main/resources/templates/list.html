@@ -1,16 +1,141 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>动画大全</title>
     <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/body.css">
+    <style>
+        input[type="text"] {
+            width: 80%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin-left: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+    </style>
+    <style>
+        .floating-component {
+            position: fixed;
+            top: 30%;
+            right: 30%;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h5><a href="/view/index">首页</a></h5>
-        <h5><a href="/view/list">动画大全</a></h5>
-        <h5><a href="/view/recommendation">获取推荐</a></h5>
-        <h5><a href="/view/chat">聊天室</a></h5>
+        <h5><a href="/ame/view/index">首页</a></h5>
+        <h5><a href="/ame/view/list">动画大全</a></h5>
+        <h5><a href="/ame/view/recommendation">获取推荐</a></h5>
+        <h5><a href="/ame/view/chat">聊天室</a></h5>
+        <h5><a href="/ame/view/userInfo">个人中心</a></h5>
     </header>
+    <div id="app">
+        <div class="root">
+            <p><input type="text" v-model="keyword" placeholder="输入关键字进行搜索"><button @click="test">搜索</button></p>
+            <div class="card" v-for="item in animeList">
+                <img src="/img/OIP-C.jpg" alt="动画封面">
+                <h3>动画名称:{{item.title}}</h3>
+                <p>评分：{{item.rating}}</p>
+                <p><a v-bind:href="`/ame/view/anime/`+item.animeId">查看详情</a></p>
+            </div>
+            <div class="floating-component">
+                <button @click="ppage">上一页</button>&nbsp{{page}}<button @click="npage">下一页</button>
+            </div>
+        </div>
+    </div>
 </body>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/1.7.2/axios.js"></script>
+<script>
+    axios.defaults.baseURL = 'http://localhost:1888';
+
+
+    new Vue({
+        el:'#app',
+        data(){
+            return{
+                animeList:[],
+                page:1,
+                keyword:'',
+            }
+        },
+        mounted(){
+            this.getAnimeList()
+        },
+        methods:{
+            ppage(){
+                if(this.page==1){
+                    alert("已是第一页")
+                }else {
+                    this.page-=1
+                    let _ = this
+                    axios.get("/ame/animes/",{
+                        params: {
+                            page:_.page
+                        }
+                    }).then(resp=>{
+                        _.animeList = resp.data
+                        console.log(resp.data)
+                    })
+                }
+            },
+            npage(){
+                this.page+=1
+                let _ = this
+                axios.get("/ame/animes/",{
+                    params: {
+                        page:_.page
+                    }
+                }).then(resp=>{
+                    _.animeList = resp.data
+                    console.log(resp.data)
+                })
+            },
+            getAnimeList(){
+                let _ = this
+                axios.get("/ame/animes/",{
+                    params: {
+                        page:_.page
+                    }
+                }).then(resp=>{
+                    _.animeList = resp.data
+                    console.log(resp.data)
+                })
+            },
+            test(){
+                if(this.keyword==''){
+                    alert("请输入关键词")
+                }else{
+                    let _ = this
+                    axios.get("/ame/animes/search",{
+                        params: {
+                            keyword:_.keyword
+                        }
+                    }).then(resp=>{
+                        _.animeList = resp.data
+                    })
+                }
+            }
+        }
+    })
+</script>
+
 </html>

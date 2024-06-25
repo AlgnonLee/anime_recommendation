@@ -71,11 +71,11 @@
         <input type="number" placeholder="年龄" name="age" v-model="user.age" required>
         <label><b>性别</b></label>
         <label for="option1">男</label>
-        <input type="radio" id="option1" name="gender" value="male" v-model="user.gender" required>
+        <input type="radio" id="option1" name="gender" value="男" v-model="user.gender" required>
         <label for="option2">女</label>
-        <input type="radio" id="option2" name="gender" value="female" v-model="user.gender" required>
+        <input type="radio" id="option2" name="gender" value="女" v-model="user.gender" required>
         <button @click="register">注册</button>
-        <a href="/view/login">登录</a>
+        <a href="/ame/view/login">登录</a>
         <button @click="test">test</button>
     </div>
 </div>
@@ -83,6 +83,8 @@
 <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/axios/1.7.2/axios.js"></script>
 <script>
+    axios.defaults.baseURL = 'http://10.107.132.228:1888';
+
 
     new Vue({
         el:'#app',
@@ -116,7 +118,7 @@
                 return
             }
             this.user.passwd=this.passwd_1
-            axios.post("/register",_.user).then(resp=>{
+            axios.post("/ame/register",_.user).then(resp=>{
                 alert(resp.data)
             })
         }

@@ -1,16 +1,130 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>推荐动画</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        #app {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .root {
+            text-align: center;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 2px;
+            cursor: pointer;
+        }
+        .need {
+            color: red;
+            font-weight: bold;
+        }
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        h3 {
+            margin: 10px 0;
+        }
+        p {
+            margin: 5px 0;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+    </style>
     <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/body.css">
 </head>
 <body>
     <header>
-        <h5><a href="/view/index">首页</a></h5>
-        <h5><a href="/view/list">动画大全</a></h5>
-        <h5><a href="/view/recommendation">获取推荐</a></h5>
-        <h5><a href="/view/chat">聊天室</a></h5>
+        <h5><a href="/ame/view/index">首页</a></h5>
+        <h5><a href="/ame/view/list">动画大全</a></h5>
+        <h5><a href="/ame/view/recommendation">获取推荐</a></h5>
+        <h5><a href="/ame/view/chat">聊天室</a></h5>
+        <h5><a href="/ame/view/userInfo">个人中心</a></h5>
     </header>
+    <div id="app">
+        <div class="root">
+            <p><button @click="getRCM">获取推荐动画</button></p>
+            <input type="hidden" readonly th:value="${userId}" id="userId">
+            <input type="hidden" readonly th:value="${results}" id="results">
+            <input type="hidden" readonly th:value="${exist}" id="exist">
+            <div class="need" th:if="!${exist}">
+                <p>请首先获取推荐动画</p>
+            </div>
+            <div class="card" v-for="item in animeList">
+                <img src="/img/OIP-C.jpg" alt="动画封面">
+                <h3>动画名称:{{item.title}}</h3>
+                <p>评分：{{item.rating}}</p>
+                <p><a v-bind:href="`/ame/view/anime/`+item.animeId">查看详情</a></p>
+            </div>
+        </div>
+    </div>
 </body>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/1.7.2/axios.js"></script>
+<script>
+    axios.defaults.baseURL = 'http://localhost:1888';
+
+
+    new Vue({
+        el:'#app',
+        data(){
+            return{
+                animeIds:document.getElementById("results").value,
+                userId:document.getElementById("userId").value,
+                exist:document.getElementById("exist").value,
+                animeList:[]
+            }
+        },
+        mounted(){
+          if(this.exist=='true'){
+              this.test()
+          }
+        },
+        methods:{
+            getAnimeList(){
+                axios.get("/")
+            },
+            getRCM(){
+                let _ = this
+                axios.get("/recommendation/rcm/"+_.userId)
+                alert("已发送获取推荐请求，由于算力原因请在3到5分钟之后回到本页面查看推荐结果")
+            },
+            test(){
+                let _ = this
+                axios.get("/ame/rcminfo/"+_.userId).then(resp=>{
+                    // _.animeList = resp.data
+                    _.animeList = resp.data
+                    console.log(_.animeList)
+                })
+                // console.log(_.animeList)
+            }
+        }
+    })
+</script>
 </html>

@@ -4,18 +4,35 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d10dbd9b-57c2-4242-b989-70b760a04c81" name="Changes" comment="" />
+    <list default="true" id="d10dbd9b-57c2-4242-b989-70b760a04c81" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anime_server_system/src/main/java/org/anime/VController/CController.java" beforeDir="false" afterPath="$PROJECT_DIR$/anime_server_system/src/main/java/org/anime/VController/CController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anime_server_system/src/main/java/org/anime/VController/ViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/anime_server_system/src/main/java/org/anime/VController/ViewController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anime_server_system/src/main/java/org/anime/controller/animeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/anime_server_system/src/main/java/org/anime/controller/animeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anime_server_system/src/main/java/org/anime/controller/ratingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/anime_server_system/src/main/java/org/anime/controller/ratingController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anime_server_system/src/main/java/org/anime/controller/userController.java" beforeDir="false" afterPath="$PROJECT_DIR$/anime_server_system/src/main/java/org/anime/controller/userController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anime_server_system/src/main/java/org/anime/interceptor/InterceptorConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/anime_server_system/src/main/java/org/anime/interceptor/InterceptorConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anime_server_system/src/main/resources/static/css/body.css" beforeDir="false" afterPath="$PROJECT_DIR$/anime_server_system/src/main/resources/static/css/body.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anime_server_system/src/main/resources/templates/anime.html" beforeDir="false" afterPath="$PROJECT_DIR$/anime_server_system/src/main/resources/templates/anime.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anime_server_system/src/main/resources/templates/chat.html" beforeDir="false" afterPath="$PROJECT_DIR$/anime_server_system/src/main/resources/templates/chat.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anime_server_system/src/main/resources/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/anime_server_system/src/main/resources/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anime_server_system/src/main/resources/templates/list.html" beforeDir="false" afterPath="$PROJECT_DIR$/anime_server_system/src/main/resources/templates/list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anime_server_system/src/main/resources/templates/recommendation.html" beforeDir="false" afterPath="$PROJECT_DIR$/anime_server_system/src/main/resources/templates/recommendation.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/anime_server_system/src/main/resources/templates/register.html" beforeDir="false" afterPath="$PROJECT_DIR$/anime_server_system/src/main/resources/templates/register.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/python/archive_2.zip" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/python/rcm3.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/python/rcm3.ipynb" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/python" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2hj8uZuKBXk3CGwAkZ6SaTpBYbj" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -24,7 +41,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "<unknown>",
+    "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "D:/animeRecomendation",
     "node.js.detected.package.eslint": "true",
@@ -32,6 +49,9 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -52,6 +72,11 @@
       <option name="presentableId" value="Default" />
       <updated>1718096350212</updated>
       <workItem from="1718096351302" duration="785000" />
+      <workItem from="1718107477280" duration="3000" />
+      <workItem from="1718465490701" duration="31000" />
+      <workItem from="1718530100052" duration="91000" />
+      <workItem from="1718939260223" duration="69000" />
+      <workItem from="1718939344533" duration="147000" />
     </task>
     <servers />
   </component>

@@ -16,6 +16,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
     public void addInterceptors(InterceptorRegistry registry){
         InterceptorRegistration registration = registry.addInterceptor(new MyInterceptor(redisService));
-        registration.addPathPatterns("/view/recommendation","/view/chat","/view/anime/**");//拦截所有路径,/**表示匹配多层地址
+        registration.addPathPatterns("/view/recommendation","/view/chat","/view/anime/**","/view/userInfo");//拦截所有路径,/**表示匹配多层地址
     }
+
 }

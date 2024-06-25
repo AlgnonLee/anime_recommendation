@@ -4,3 +4,54 @@
     width: 60%;
     flex-direction: column;
 }
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+#app {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.root {
+    text-align: center;
+}
+button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 10px 2px;
+    cursor: pointer;
+}
+.need {
+    color: red;
+    font-weight: bold;
+}
+.card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+img {
+    max-width: 100%;
+    height: auto;
+}
+h3 {
+    margin: 10px 0;
+}
+p {
+    margin: 5px 0;
+}
+a {
+    color: #4CAF50;
+    text-decoration: none;
+}

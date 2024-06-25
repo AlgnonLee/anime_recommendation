@@ -1,16 +1,148 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>动画详情</title>
     <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/body.css">
+    <style>
+        .rating-part, .my-rating, .other-ratings {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .rating-part p, .my-rating p, .other-ratings p {
+            margin: 0;
+        }
+        .rating-part select, .rating-part textarea, .rating-part button {
+            margin-top: 10px;
+        }
+        .rating-part button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 2px;
+            cursor: pointer;
+        }
+        .my-rating {
+            background-color: #f2f2f2;
+        }
+        .other-ratings {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .rating {
+            flex: 1;
+            min-width: 30%;
+            margin: 5px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h5><a href="/view/index">首页</a></h5>
-        <h5><a href="/view/list">动画大全</a></h5>
-        <h5><a href="/view/recommendation">获取推荐</a></h5>
-        <h5><a href="/view/chat">聊天室</a></h5>
+        <h5><a href="/ame/view/index">首页</a></h5>
+        <h5><a href="/ame/view/list">动画大全</a></h5>
+        <h5><a href="/ame/view/recommendation">获取推荐</a></h5>
+        <h5><a href="/ame/view/chat">聊天室</a></h5>
+        <h5><a href="/ame/view/userInfo">个人中心</a></h5>
     </header>
+    <div id="app">
+        <div class="root">
+            <div class="card">
+                <img src="/img/OIP-C.jpg" alt="动画封面">
+                <input type="hidden" th:value="${anime.animeId}" id="aid">
+                <h3>动画名称：<span th:text="${anime.title}"></span></h3>
+                <p>动画风格：<span th:text="${anime.genre}"></span></p>
+                <p>动画类型：<span th:text="${anime.type}"></span></p>
+                <p>动画集数：<span th:text="${anime.episodes}"></span></p>
+                <p>评分：<span th:text="${anime.rating}"></span></p>
+            </div>
+            <p>相似动画</p>
+            <div class="card" v-for="item in animeLike">
+                <img src="/img/OIP-C.jpg" alt="动画封面">
+                <h3>动画名称:{{item.title}}</h3>
+                <p>评分：{{item.rating}}</p>
+                <p><a v-bind:href="`/ame/view/anime/`+item.animeId">查看详情</a></p>
+            </div>
+            <div class="rating-part">
+                <p>对动画进行评分：</p>
+                <select v-model="rating.rating">
+                    <option value="10">★★★★★</option>
+                    <option value="8">★★★★✰</option>
+                    <option value="6">★★★✰✰</option>
+                    <option value="4">★★✰✰✰</option>
+                    <option value="2">★✰✰✰✰</option>
+                </select>
+                <p>评论：</p>
+                <textarea v-model="rating.comment">
+
+                </textarea>
+                <p><button @click="rate">提交评论</button></p>
+            </div>
+            <div class="my-rating" th:if="${exist}">
+                <p>我的评分：<span th:text="${rating.rating}"></span></p>
+                <p>我的评论：<span th:text="${rating.comment}"></span></p>
+            </div>
+            <div class="other-ratings">
+                <div class="rating" v-for="item in ratingList">
+                    <p>用户评分：{{item.rating}}</p>
+                    <p>评论详情：{{item.comment}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/1.7.2/axios.js"></script>
+
+<script>
+    axios.defaults.baseURL = 'http://localhost:1888';
+
+    new Vue({
+        el:'#app',
+        data(){
+            return{
+                ratingList:[],
+                aid:document.getElementById("aid").value,
+                rating:{
+                    rating:'',
+                    animeId:document.getElementById("aid").value,
+                    comment:''
+                },
+                animeLike:[]
+            }
+        },
+        mounted(){
+            this.getRatings(),
+            this.getLikes(this.aid)
+        },
+        methods:{
+            rate(){
+                let _ = this
+                axios.post("/ame/ratings/insert",_.rating).then(resp=>{
+                    alert(resp.data)
+                })
+            },
+            getRatings(){
+                let _ = this
+                axios.get("/ame/ratings/"+_.aid).then(resp=>{
+                    _.ratingList=resp.data
+                })
+            },
+            getLikes(aid){
+                let _ = this
+                axios.get("/ame/animes/liked/"+aid).then(resp=>{
+                    _.animeLike=resp.data
+                })
+            }
+        }
+    })
+</script>
 </html>

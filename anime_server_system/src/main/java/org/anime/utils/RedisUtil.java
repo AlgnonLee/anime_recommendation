@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -22,6 +23,10 @@ public class RedisUtil {
 
     public void delete(String key) {
         stringRedisTemplate.delete(key);
+    }
+
+    public List<String> getList(String key) {
+        return stringRedisTemplate.opsForList().range(key, 0, -1);
     }
 }
 

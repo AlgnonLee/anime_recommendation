@@ -39,7 +39,7 @@ public class MyInterceptor implements HandlerInterceptor {
                         key=cookie.getValue();
                     }
                 }
-                if(name == null){
+                if(name == null ||redisService.get(name)==null){
                     response.sendRedirect("/view/login");
                 }else if(redisService.get(name).equals(key)){
                     return true;

@@ -8,33 +8,35 @@
 </head>
 <body>
     <header>
-        <h5><a href="/view/index">首页</a></h5>
-        <h5><a href="/view/list">动画大全</a></h5>
-        <h5><a href="/view/recommendation">获取推荐</a></h5>
-        <h5><a href="/view/chat">聊天室</a></h5>
+        <h5><a href="/ame/view/index">首页</a></h5>
+        <h5><a href="/ame/view/list">动画大全</a></h5>
+        <h5><a href="/ame/view/recommendation">获取推荐</a></h5>
+        <h5><a href="/ame/view/chat">聊天室</a></h5>
+        <h5><a href="/ame/view/userInfo">个人中心</a></h5>
     </header>
     <div id="app">
-        <div class="cards">
+        <div class="root">
+            <p>随机动画推荐</p>
             <div class="card" v-for="item in animeList">
                 <img src="/img/OIP-C.jpg" alt="动画封面">
-<!--                {{object.title}}-->
                 <h3>动画名称:{{item.title}}</h3>
-                <p>类型：{{item.genre}}</p>
                 <p>评分：{{item.rating}}</p>
-                <p>集数：{{item.episodes}}</p>
+                <p><a v-bind:href="`/ame/view/anime/`+item.animeId">查看详情</a></p>
             </div>
-            <button @click="getAnimeList">test</button>
         </div>
     </div>
 </body>
 <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/axios/1.7.2/axios.js"></script>
 <script>
+    axios.defaults.baseURL = 'http://localhost:1888';
+
+
     new Vue({
         el:'#app',
         data(){
             return{
-                animeList:[]
+                animeList:[],
             }
         },
         mounted(){
@@ -43,7 +45,7 @@
         methods:{
             getAnimeList(){
                 let _ = this
-                axios.get("/animes/random").then(resp=>{
+                axios.get("/ame/animes/random").then(resp=>{
                     _.animeList = resp.data
                     console.log(resp.data)
                 })

@@ -1,16 +1,181 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>聊天室</title>
+    <title>Fan Chat</title>
     <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/body.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .chatContainer {
+            max-width: 600px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .roomSelect {
+            margin-bottom: 20px;
+        }
+        .messageViewer {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .messageSender {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .messageSender div {
+            margin-right: 10px;
+        }
+        .messageSender input[type="text"] {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+        .messageSender button {
+            padding: 8px 16px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .messageSender button:hover {
+            background-color: #4cae4c;
+        }
+        #messages {
+            list-style: none;
+            padding: 0;
+        }
+        #messages li {
+            background-color: #e6e6e6;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h5><a href="/view/index">首页</a></h5>
-        <h5><a href="/view/list">动画大全</a></h5>
-        <h5><a href="/view/recommendation">获取推荐</a></h5>
-        <h5><a href="/view/chat">聊天室</a></h5>
+        <h5><a href="/ame/view/index">首页</a></h5>
+        <h5><a href="/ame/view/list">动画大全</a></h5>
+        <h5><a href="/ame/view/recommendation">获取推荐</a></h5>
+        <h5><a href="/ame/view/chat">聊天室</a></h5>
+        <h5><a href="/ame/view/userInfo">个人中心</a></h5>
     </header>
+
+    <div id="app">
+        <div class="chatContainer">
+            <div class="roomSelect">
+                <select name="" id="roomId" v-model="roomId">
+                    <option v-for="(id, index) in roomIds" :key="index" :value="id">{{ roomNames[index] }}</option>
+                    <option default value="0">在这里选择房间</option>
+                </select>
+            </div>
+            <div class="messageViewer">
+                <ul id="messages"></ul>
+            </div>
+            <div class="messageSender">
+                <div>昵称</div><input type="text" readonly th:value="${nickname}" id="nickname">
+                <div>Message</div><input id="input" v-model="msg.context"/>
+                <button @click="emit">发送</button>
+            </div>
+        </div>
+    </div>
 </body>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/1.7.2/axios.js"></script>
+<script src="/js/socket.io.js"></script>
+<script>
+    axios.defaults.baseURL='http://localhost:1888'
+    const socket = io("ws://localhost:3000");
+
+    new Vue({
+        el:'#app',
+        data(){
+            return{
+                roomIds:[],
+                roomNames:[],
+                roomId:0,
+                msg:{
+                    room:0,
+                    nickname:document.getElementById("nickname").value,
+                    context:''
+                },
+                history:[]
+            }
+        },
+        mounted(){
+            this.getRooms()
+            this.getSocket()
+            this.getHistory(this.roomId)
+        },
+        methods:{
+            getRooms(){
+                let _ = this
+                axios.get("/ame/roomList").then(resp=>{
+                    // console.log(resp.data)
+                    _.roomIds=resp.data
+                })
+                axios.get("/ame/roomNames").then(resp=>{
+                    // console.log(resp.data)
+                    _.roomNames = resp.data
+                })
+            },
+            emit(){
+                let _ = this
+                _.msg.room = _.roomId
+                socket.emit('chat message', _.msg);
+            },
+            getSocket(){
+                socket.on("chat message",(msg)=>{
+                    if(msg.room == this.roomId){
+                        const item = document.createElement('li');
+                        item.textContent = msg.nickname+"："+msg.context;
+                        let messages = document.getElementById("messages")
+                        messages.appendChild(item);
+                        window.scrollTo(0, document.body.scrollHeight);
+                    }
+                })
+            },
+            getHistory(id){
+                let _ = this
+                axios.get("/chat/history/"+id).then(resp=>{
+                    _.history = resp.data
+                })
+            }
+        },
+        watch: {
+            roomId(newVal,oldVal){
+                this.getHistory(newVal)
+            },
+            history(newVal,oldVal){
+                let messages = document.getElementById("messages")
+                messages.innerHTML = ''
+                for (let i = 0; i < newVal.length; i++) {
+                    let msg = JSON.parse(newVal[i])
+                    const item = document.createElement('li');
+                    item.textContent = msg.nickname+"："+msg.context;
+                    messages.appendChild(item);
+                    window.scrollTo(0, document.body.scrollHeight);
+                }
+            }
+        },
+    })
+
+</script>
 </html>
