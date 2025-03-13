@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>评论管理</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            width: 200px;
+            height: 100%;
+            background-color: #f8f9fa;
+            position: fixed;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .content {
+            margin-left: 200px;
+            padding: 20px;
+        }
+    </style>
+    <style>
+        .floating-component {
+            position: fixed;
+            top: 10%;
+            right: 30%;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <h3>侧边栏标题</h3>
+    <ul>
+        <li><a href="/ame/view/sys/animeMG">动画管理</a></li>
+        <li><a href="/ame/view/sys/userMG">用户管理</a></li>
+        <li><a href="/ame/view/sys/ratingMG">评论管理</a></li>
+    </ul>
+</div>
+<div class="content">
+    <h1>主要内容</h1>
+    <p>这里是页面的主要内容。</p>
+    <div id="app">
+        <div class="root">
+            <anime-table></anime-table>
+        </div>
+    </div>
+
+    <template id="table">
+        <div class="inner">
+            <el-table
+                    :data="userList"
+                    style="width: 100%">
+                <el-table-column
+                        prop="ratingId"
+                        label="评论ID"
+                        width="180">
+                </el-table-column>
+                <el-table-column
+                        prop="userId"
+                        label="用户ID"
+                        width="180">
+                </el-table-column>
+                <el-table-column
+                        prop="animeId"
+                        label="动画ID">
+                </el-table-column>
+                <el-table-column
+                        prop="rating"
+                        label="评分">
+                </el-table-column>
+                <el-table-column
+                        prop="comment"
+                        label="评论">
+                </el-table-column>
+                <el-table-column label="操作">
+                    <template slot-scope="scope">
+                        <el-button
+                                size="mini"
+                                type="danger"
+                                @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="floating-component">
+                <button @click="ppage">上一页</button>&nbsp{{page}}&nbsp<button @click="npage">下一页</button>
+            </div>
+        </div>
+    </template>
+</div>
+</body>
+<script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.13/vue.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/1.7.2/axios.js"></script>
+<!-- 引入组件库 -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+
+    let tb = Vue.component("animeTable",{
+        template:document.getElementById("table"),
+        data() {
+            return {
+                userList:[],
+                page:1,
+                keyword:'',
+                dialogFormVisible: false,
+                user:{},
+                formLabelWidth: '120px'
+            }
+        },
+        mounted(){
+            this.getAnimeList()
+        },
+        methods:{
+            ppage(){
+                if(this.page==1){
+                    alert("已是第一页")
+                }else {
+                    this.page-=1
+                    let _ = this
+                    axios.get("/ame/ratings/",{
+                        params: {
+                            page:_.page
+                        }
+                    }).then(resp=>{
+                        _.userList = resp.data
+                        console.log(resp.data)
+                    })
+                }
+            },
+            npage(){
+                this.page+=1
+                let _ = this
+                axios.get("/ame/ratings/",{
+                    params: {
+                        page:_.page
+                    }
+                }).then(resp=>{
+                    _.userList = resp.data
+                    console.log(resp.data)
+                })
+            },
+            getAnimeList(){
+                let _ = this
+                axios.get("/ame/ratings/",{
+                    params: {
+                        page:_.page
+                    }
+                }).then(resp=>{
+                    _.userList = resp.data
+                    console.log(resp.data)
+                })
+            },
+            handleDelete(index, row){
+                let _ = this
+                this.user = row
+                let judgement = window.confirm("确定要删除这个评论信息吗？")
+                if(judgement){
+                    if(window.confirm("确定要删除这个评论信息吗？将无法复原")){
+                        axios.post("/ame/ratings/delete",_.user).then(resp=>{
+                            alert(resp.data)
+                        })
+                    }
+                }
+            }
+        }
+    })
+
+
+    let vm = new Vue({
+        el:"#app",
+        component:tb
+    })
+</script>
+</html>

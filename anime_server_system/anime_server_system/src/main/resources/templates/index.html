@@ -18,7 +18,7 @@
         <div class="root">
             <p>随机动画推荐</p>
             <div class="card" v-for="item in animeList">
-                <img :src="item.pic" alt="动画封面">
+                <img src="/img/OIP-C.jpg" alt="动画封面">
                 <h3>动画名称:{{item.title}}</h3>
                 <p>评分：{{item.rating}}</p>
                 <p><a v-bind:href="`/ame/view/anime/`+item.animeId">查看详情</a></p>
@@ -48,21 +48,7 @@
                 axios.get("/ame/animes/random").then(resp=>{
                     _.animeList = resp.data
                     console.log(resp.data)
-                    _.animeList.forEach(anime => {
-                        axios.get(`https://api.jikan.moe/v4/anime/${anime.animeId}/pictures`)
-                            .then(resp => {
-                                // 更新 anime 对象的 pic 属性
-                                Vue.set(anime, 'pic', resp.data.data[0].jpg.image_url);
-                            })
-                            .catch(error => {
-                                console.error("获取图片失败:", error);
-                                // 如果请求失败，设置一个默认图片
-                                Vue.set(anime, 'pic', '/img/OIP-C.jpg');
-                            });
-                    });
-                }).catch(error => {
-                    console.error("获取动画列表失败:", error);
-                });
+                })
             }
         }
     })
