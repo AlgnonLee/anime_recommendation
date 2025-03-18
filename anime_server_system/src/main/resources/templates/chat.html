@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Fan Chat</title>
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/body.css">
+    <link rel="stylesheet" href="/css/customHeaderAndBody.css">
+    <script type="module" src="/js/dynamicBackground.js"></script>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -91,8 +92,8 @@
             </div>
             <div class="messageSender">
                 <div>昵称</div><input type="text" readonly th:value="${nickname}" id="nickname">
-                <div>Message</div><input id="input" v-model="msg.context"/>
-                <button @click="emit">发送</button>
+                <div>Message</div><input id="input" type="text" v-model="msg.context"/>
+                <button @click="emit" class="custom-button">发送</button>
             </div>
         </div>
     </div>
@@ -128,11 +129,9 @@
             getRooms(){
                 let _ = this
                 axios.get("/ame/roomList").then(resp=>{
-                    // console.log(resp.data)
                     _.roomIds=resp.data
                 })
                 axios.get("/ame/roomNames").then(resp=>{
-                    // console.log(resp.data)
                     _.roomNames = resp.data
                 })
             },

@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>动画大全</title>
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/body.css">
+    <link rel="stylesheet" href="/css/customHeaderAndBody.css">
+    <link rel="stylesheet" href="/css/a.css">
+    <script type="module" src="/js/dynamicBackground.js"></script>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <style>
         input[type="text"] {
             width: 80%;
@@ -13,29 +15,39 @@
             border-radius: 3px;
             font-size: 14px;
         }
-        button {
-            padding: 5px 10px;
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px;
-            margin-left: 5px;
-            cursor: pointer;
-            border-radius: 3px;
-        }
+
     </style>
     <style>
         .floating-component {
-            position: fixed;
-            top: 30%;
-            right: 30%;
-            background-color: #f9f9f9;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            position: fixed; /* 固定定位，使其可以随意拖动 */
+            top: 50px; /* 初始位置 */
+            left: 50px;
+            padding: 15px;
+            background-color: #2c3e50; /* 深色背景 */
+            border-radius: 10px; /* 圆角 */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* 阴影 */
+            color: white; /* 文字颜色 */
+            cursor: grab; /* 鼠标样式 */
+            user-select: none; /* 防止文字被选中 */
+            z-index: 1000; /* 确保在最上层 */
+        }
+
+        .floating-component:active {
+            cursor: grabbing; /* 拖动时鼠标样式 */
+        }
+
+        .floating-component button {
+            background-color: #3498db; /* 按钮背景色 */
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .floating-component button:hover {
+            background-color: #2980b9; /* 按钮悬停效果 */
         }
     </style>
 </head>
@@ -49,15 +61,15 @@
     </header>
     <div id="app">
         <div class="root">
-            <p><input type="text" v-model="keyword" placeholder="输入关键字进行搜索"><button @click="test">搜索</button></p>
+            <p><input type="text" v-model="keyword" placeholder="输入关键字进行搜索"><button @click="test" class="custom-button">搜索</button></p>
             <div class="card" v-for="item in animeList">
                 <img :src="item.pic" alt="动画封面">
                 <h3>动画名称:{{item.title}}</h3>
                 <p>评分：{{item.rating}}</p>
-                <p><a v-bind:href="`/ame/view/anime/`+item.animeId">查看详情</a></p>
+                <p><a v-bind:href="`/ame/view/anime/`+item.animeId"><button class="custom-button">查看详情</button></a></p>
             </div>
-            <div class="floating-component">
-                <button @click="ppage">上一页</button>&nbsp{{page}}<button @click="npage">下一页</button>
+            <div class="floating-component" ref="floatingBox">
+                <button @click="ppage">上一页</button>&nbsp;{{ page }}&nbsp;<button @click="npage">下一页</button>
             </div>
         </div>
     </div>
@@ -75,10 +87,16 @@
                 animeList:[],
                 page:1,
                 keyword:'',
+                isDragging: false, // 是否正在拖动
+                offsetX: 0, // 鼠标相对于盒子左上角的偏移量
+                offsetY: 0,
             }
         },
         mounted(){
-            this.getAnimeList()
+            this.getAnimeList();
+            const box = this.$refs.floatingBox;
+            box.addEventListener('mousedown', this.startDrag); // 监听鼠标按下事件
+
         },
         methods:{
             ppage(){
@@ -94,6 +112,18 @@
                     }).then(resp=>{
                         _.animeList = resp.data
                         console.log(resp.data)
+                        _.animeList.forEach(anime => {
+                            axios.get(`https://api.jikan.moe/v4/anime/${anime.animeId}/pictures`)
+                                .then(resp => {
+                                    // 更新 anime 对象的 pic 属性
+                                    Vue.set(anime, 'pic', resp.data.data[0].jpg.image_url);
+                                })
+                                .catch(error => {
+                                    console.error("获取图片失败:", error);
+                                    // 如果请求失败，设置一个默认图片
+                                    Vue.set(anime, 'pic', '/img/OIP-C.jpg');
+                                });
+                        });
                     })
                 }
             },
@@ -107,6 +137,18 @@
                 }).then(resp=>{
                     _.animeList = resp.data
                     console.log(resp.data)
+                    _.animeList.forEach(anime => {
+                        axios.get(`https://api.jikan.moe/v4/anime/${anime.animeId}/pictures`)
+                            .then(resp => {
+                                // 更新 anime 对象的 pic 属性
+                                Vue.set(anime, 'pic', resp.data.data[0].jpg.image_url);
+                            })
+                            .catch(error => {
+                                console.error("获取图片失败:", error);
+                                // 如果请求失败，设置一个默认图片
+                                Vue.set(anime, 'pic', '/img/OIP-C.jpg');
+                            });
+                    });
                 })
             },
             getAnimeList(){
@@ -151,7 +193,28 @@
                         _.animeList = resp.data
                     })
                 }
-            }
+            },
+            startDrag(event) {
+                this.isDragging = true;
+                const box = this.$refs.floatingBox;
+                const rect = box.getBoundingClientRect();
+                this.offsetX = event.clientX - rect.left; // 计算鼠标相对于盒子左上角的偏移量
+                this.offsetY = event.clientY - rect.top;
+                document.addEventListener('mousemove', this.onDrag);
+                document.addEventListener('mouseup', this.stopDrag);
+            },
+            onDrag(event) {
+                if (this.isDragging) {
+                    const box = this.$refs.floatingBox;
+                    box.style.left = `${event.clientX - this.offsetX}px`; // 更新盒子的位置
+                    box.style.top = `${event.clientY - this.offsetY}px`;
+                }
+            },
+            stopDrag() {
+                this.isDragging = false;
+                document.removeEventListener('mousemove', this.onDrag);
+                document.removeEventListener('mouseup', this.stopDrag);
+            },
         }
     })
 </script>

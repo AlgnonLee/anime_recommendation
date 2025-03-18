@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>首页</title>
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/body.css">
+    <link rel="stylesheet" href="/css/customHeaderAndBody.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
 </head>
 <body>
     <header>
@@ -16,12 +16,11 @@
     </header>
     <div id="app">
         <div class="root">
-            <p>随机动画推荐</p>
             <div class="card" v-for="item in animeList">
-                <img :src="item.pic" alt="动画封面">
+                <img :src="item.pic" alt="">
                 <h3>动画名称:{{item.title}}</h3>
                 <p>评分：{{item.rating}}</p>
-                <p><a v-bind:href="`/ame/view/anime/`+item.animeId">查看详情</a></p>
+                <p><a v-bind:href="`/ame/view/anime/`+item.animeId"><button class="custom-button">查看详情</button></a></p>
             </div>
         </div>
     </div>
@@ -59,6 +58,7 @@
                                 // 如果请求失败，设置一个默认图片
                                 Vue.set(anime, 'pic', '/img/OIP-C.jpg');
                             });
+
                     });
                 }).catch(error => {
                     console.error("获取动画列表失败:", error);
@@ -67,4 +67,5 @@
         }
     })
 </script>
+<script type="module" src="/js/dynamicBackground.js"></script>
 </html>

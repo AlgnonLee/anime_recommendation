@@ -3,33 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <title>推荐动画</title>
+    <link rel="stylesheet" href="/css/customHeaderAndBody.css">
+    <link rel="stylesheet" href="/css/a.css">
+    <script type="module" src="/js/dynamicBackground.js"></script>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-        }
-        #app {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .root {
-            text-align: center;
-        }
-        button {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 10px 2px;
-            cursor: pointer;
-        }
+        /*body {*/
+        /*    font-family: Arial, sans-serif;*/
+        /*    background-color: #f0f0f0;*/
+        /*}*/
+        /*#app {*/
+        /*    max-width: 800px;*/
+        /*    margin: 0 auto;*/
+        /*    padding: 20px;*/
+        /*    background-color: #fff;*/
+        /*    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);*/
+        /*}*/
+        /*.root {*/
+        /*    text-align: center;*/
+        /*}*/
+        /*button {*/
+        /*    background-color: #4CAF50;*/
+        /*    border: none;*/
+        /*    color: white;*/
+        /*    padding: 10px 20px;*/
+        /*    text-align: center;*/
+        /*    text-decoration: none;*/
+        /*    display: inline-block;*/
+        /*    font-size: 16px;*/
+        /*    margin: 10px 2px;*/
+        /*    cursor: pointer;*/
+        /*}*/
         .need {
             color: red;
             font-weight: bold;
@@ -55,9 +59,9 @@
             text-decoration: none;
         }
     </style>
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/body.css">
+<!--    <link rel="stylesheet" href="/css/header.css">-->
+<!--    <link rel="stylesheet" href="/css/header.css">-->
+<!--    <link rel="stylesheet" href="/css/body.css">-->
 </head>
 <body>
     <header>
@@ -69,7 +73,7 @@
     </header>
     <div id="app">
         <div class="root">
-            <p><button @click="getRCM">获取推荐动画</button></p>
+            <p><button @click="getRCM" class="custom-button">获取推荐动画</button></p>
             <input type="hidden" readonly th:value="${userId}" id="userId">
             <input type="hidden" readonly th:value="${results}" id="results">
             <input type="hidden" readonly th:value="${exist}" id="exist">
@@ -121,8 +125,19 @@
                     // _.animeList = resp.data
                     _.animeList = resp.data
                     console.log(_.animeList)
+                    _.animeList.forEach(anime => {
+                        axios.get(`https://api.jikan.moe/v4/anime/${anime.animeId}/pictures`)
+                            .then(resp => {
+                                // 更新 anime 对象的 pic 属性
+                                Vue.set(anime, 'pic', resp.data.data[0].jpg.image_url);
+                            })
+                            .catch(error => {
+                                console.error("获取图片失败:", error);
+                                // 如果请求失败，设置一个默认图片
+                                Vue.set(anime, 'pic', '/img/OIP-C.jpg');
+                            });
+                    });
                 })
-                // console.log(_.animeList)
             }
         }
     })

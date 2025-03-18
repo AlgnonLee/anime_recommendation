@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
@@ -53,9 +54,7 @@ public class CController {
             Cookie cookie_name = new Cookie("login_name", username);
             Cookie cookie_key = new Cookie("login_key", login_key);
             cookie_name.setPath("/");
-//            cookie_name.setMaxAge(60*60);
             cookie_key.setPath("/");
-//            cookie_key.setMaxAge(60*60);
             response.addCookie(cookie_key);
             response.addCookie(cookie_name);
             redisUtil.set(username,login_key,60*60, TimeUnit.SECONDS);
@@ -64,6 +63,32 @@ public class CController {
         } else {
             return "login";
         }
+    }
+
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+        // 1. 获取当前用户的用户名
+        String username = (String) session.getAttribute("username");
+        // 2. 清除 Redis 中的 JWT 令牌
+        if (username != null) {
+            redisUtil.delete(username); // 删除 Redis 中的登录凭证
+        }
+        // 3. 清除 Session
+        session.invalidate(); // 使当前会话失效
+        // 4. 清除客户端的 Cookie
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("login_name".equals(cookie.getName()) || "login_key".equals(cookie.getName())) {
+                    cookie.setValue(""); // 清空 Cookie 值
+                    cookie.setPath("/"); // 设置 Cookie 路径
+                    cookie.setMaxAge(0); // 设置 Cookie 过期时间为 0（立即过期）
+                    response.addCookie(cookie); // 更新 Cookie
+                }
+            }
+        }
+        // 5. 重定向到登录页面
+        return "login";
     }
 
     @ResponseBody

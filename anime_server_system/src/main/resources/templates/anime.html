@@ -3,45 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>动画详情</title>
-    <link rel="stylesheet" href="/css/header.css">
-    <link rel="stylesheet" href="/css/body.css">
+    <script type="module" src="/js/dynamicBackground.js"></script>
+    <link rel="stylesheet" href="/css/customHeaderAndBody.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <style>
         .rating-part, .my-rating, .other-ratings {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .rating-part p, .my-rating p, .other-ratings p {
-            margin: 0;
+            margin: 10px 0;
         }
-        .rating-part select, .rating-part textarea, .rating-part button {
+        .rating-part select, .rating-part textarea {
+            width: 100%;
+            padding: 10px;
             margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
         .rating-part button {
-            background-color: #4CAF50;
-            border: none;
-            color: white;
+            margin-top: 10px;
             padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 10px 2px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
-        .my-rating {
-            background-color: #f2f2f2;
+        .rating-part button:hover {
+            background-color: #4cae4c;
         }
-        .other-ratings {
-            display: flex;
-            flex-wrap: wrap;
+        .my-rating, .other-ratings {
+            margin-top: 20px;
         }
-        .rating {
-            flex: 1;
-            min-width: 30%;
-            margin: 5px;
-            border: 1px solid #ccc;
+        .my-rating p, .other-ratings p {
+            margin: 5px 0;
+        }
+        .other-ratings .rating {
+            margin-bottom: 20px;
             padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -56,7 +64,7 @@
     <div id="app">
         <div class="root">
             <div class="card">
-                <img src="/img/OIP-C.jpg" alt="动画封面">
+                <img :src="anime.pic" alt="动画封面">
                 <input type="hidden" th:value="${anime.animeId}" id="aid">
                 <h3>动画名称：<span th:text="${anime.title}"></span></h3>
                 <p>动画风格：<span th:text="${anime.genre}"></span></p>
@@ -66,10 +74,10 @@
             </div>
             <p>相似动画</p>
             <div class="card" v-for="item in animeLike">
-                <img src="/img/OIP-C.jpg" alt="动画封面">
+                <img :src="item.pic" alt="动画封面">
                 <h3>动画名称:{{item.title}}</h3>
                 <p>评分：{{item.rating}}</p>
-                <p><a v-bind:href="`/ame/view/anime/`+item.animeId">查看详情</a></p>
+                <p><a v-bind:href="`/ame/view/anime/`+item.animeId"><button class="custom-button">查看详情</button></a></p>
             </div>
             <div class="rating-part">
                 <p>对动画进行评分：</p>
@@ -81,9 +89,7 @@
                     <option value="2">★✰✰✰✰</option>
                 </select>
                 <p>评论：</p>
-                <textarea v-model="rating.comment">
-
-                </textarea>
+                <textarea v-model="rating.comment" rows="4"></textarea>
                 <p><button @click="rate">提交评论</button></p>
             </div>
             <div class="my-rating" th:if="${exist}">
@@ -116,12 +122,16 @@
                     animeId:document.getElementById("aid").value,
                     comment:''
                 },
-                animeLike:[]
+                animeLike:[],
+                anime: {
+                    pic: '/img/OIP-C.jpg' // 默认图片
+                }
             }
         },
         mounted(){
             this.getRatings(),
-            this.getLikes(this.aid)
+            this.getLikes(this.aid),
+            this.getAnimeDetails(this.aid)
         },
         methods:{
             rate(){
@@ -140,7 +150,32 @@
                 let _ = this
                 axios.get("/ame/animes/liked/"+aid).then(resp=>{
                     _.animeLike=resp.data
+                    _.animeLike.forEach(anime => {
+                        axios.get(`https://api.jikan.moe/v4/anime/${anime.animeId}/pictures`)
+                            .then(resp => {
+                                // 更新 anime 对象的 pic 属性
+                                Vue.set(anime, 'pic', resp.data.data[0].jpg.image_url);
+                            })
+                            .catch(error => {
+                                console.error("获取图片失败:", error);
+                                // 如果请求失败，设置一个默认图片
+                                Vue.set(anime, 'pic', '/img/OIP-C.jpg');
+                            });
+                    });
                 })
+            },
+            getAnimeDetails(aid){
+                let _ = this
+                axios.get(`https://api.jikan.moe/v4/anime/${aid}/pictures`)
+                    .then(resp => {
+                        // 更新 anime 对象的 pic 属性
+                        Vue.set(_.anime, 'pic', resp.data.data[0].jpg.image_url);
+                    })
+                    .catch(error => {
+                        console.error("获取图片失败:", error);
+                        // 如果请求失败，设置一个默认图片
+                        Vue.set(_.anime, 'pic', '/img/OIP-C.jpg');
+                    });
             }
         }
     })

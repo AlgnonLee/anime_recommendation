@@ -94,6 +94,14 @@ public class ViewController {
         return "userInfo";
     }
 
+    @GetMapping("/view/myRating")
+    public String myRating(HttpSession session, Model model) {
+        Object username = session.getAttribute("username");
+        User user = userMapper.selectOne(new QueryWrapper<User>().eq("username", username.toString()));
+        model.addAttribute("user", user);
+        return "myRating";
+    }
+
     @GetMapping("/view/sys/animeMG")
     public String sys_animeMG(HttpSession session, Model model) {
         return "/sys/animeMG";

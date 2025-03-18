@@ -52,4 +52,10 @@ public class ratingController {
         return ratingMapper.deleteById(rating)>0?"删除成功":"删除失败";
     }
 
+    @GetMapping("/myRatings")
+    public List<Rating> getMyRatingsByUserId(int userId) {
+        QueryWrapper<Rating> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId);
+        return ratingMapper.selectList(queryWrapper);
+    }
 }

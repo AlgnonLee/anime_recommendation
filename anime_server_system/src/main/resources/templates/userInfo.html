@@ -3,53 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <title>用户中心</title>
+    <link rel="icon" href="/ame/favicon.ico" type="image/x-icon">
     <style>
+    #app {
+    margin-top: 120px; /* 确保内容不被两个固定的header遮挡 */
+    padding: 20px;
+    height: calc(100% - 120px); /* 减去两个header的高度 */
+    overflow-y: auto;
+    }
 
-        #app {
-            width: 300px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            background-color: #f9f9f9;
-        }
+    .info {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
+    }
 
-        .info {
-            margin-bottom: 10px;
-        }
+    .info p {
+    margin: 10px 0;
+    font-size: 16px;
+    }
 
-        .info p {
-            margin: 0;
-            padding: 5px 0;
-        }
+    .info input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
 
-        .info input[type="text"],
-        .info input[type="password"],
-        .info input[type="number"]{
-            width: 100%;
-            padding: 5px;
-            border: 1px solid #ccc;
-            outline: none;
-        }
+    .info input:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    outline: none;
+    }
 
-        .info button {
-            padding: 5px 10px;
-            border: none;
-            background-color: #007bff;
-            color: #fff;
-            cursor: pointer;
-        }
+    .info button {
+    background-color: #3498db;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 10px;
+    }
 
-        .info button:hover {
-            background-color: #0056b3;
-        }
+    .info button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+    }
 
-        .change {
-            display: none;
-        }
+    .info button:active {
+    background-color: #1c6ea4;
+    transform: translateY(0);
+    }
+
+    .change {
+    margin-top: 20px;
+    }
+
+    .change p {
+    margin: 10px 0;
+    }
+
+    .change input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .change input:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    outline: none;
+    }
+
+    .change button {
+    background-color: #3498db;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 10px;
+    }
+
+    .change button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+    }
+
+    .change button:active {
+    background-color: #1c6ea4;
+    transform: translateY(0);
+    }
+
+    #app header {
+        position: relative;
+        justify-content: space-around; /* 水平分布 */
+        align-items: center; /* 垂直居中 */
+    }
     </style>
 </head>
-<link rel="stylesheet" href="/css/header.css">
-<link rel="stylesheet" href="/css/body.css">
+<link rel="stylesheet" href="/css/customHeaderAndBody.css">
+<script type="module" src="/js/dynamicBackground.js"></script>
+
 <body>
     <header>
         <h5><a href="/ame/view/index">首页</a></h5>
@@ -59,15 +131,22 @@
         <h5><a href="/ame/view/userInfo">个人中心</a></h5>
     </header>
     <div id="app">
+        <header style="margin-bottom: 5px; margin-left: 0">
+            <h5><a href="/ame/view/userInfo">个人信息</a></h5>
+            <h5><a href="/ame/view/myRating">我的评分</a></h5>
+            <h5><a href="/ame/view/myCollection">我的收藏</a></h5>
+            <h5><button class="custom-button" @click="logout">退出账号</button></h5>
+        </header>
         <div class="info">
             <p>UID：<input type="text" readonly th:value="${user.userId}" id="uid"></p>
             <p>用户名：<input type="text" readonly th:value="${user.username}" id="username"></p>
-            <p>密码：<input type="password" readonly th:value="${user.passwd}" id="old_passwd"></p>
+            <p hidden="hidden"><input type="password" readonly th:value="${user.passwd}" id="old_passwd"></p>
             <p>昵称：<input type="text" readonly th:value="${user.nickname}" id="old_nickname">
             <p>年龄：<input type="text" readonly th:value="${user.age}" id="old_age"></p>
-            <p>性别：<input type="text" readonly th:value="${user.gender}" id="old_gender"></b></p><button  @click="show_1 = !show_1">修改个人信息</button>
+            <p>性别：<input type="text" readonly th:value="${user.gender}" id="old_gender"></b></p>
+            <button  @click="toggleForm">修改个人信息</button>
             <p><span class="change" v-if="show_1">
-                <p  v-if="show_1">输入原始密码：<input type="password" autocomplete="off" v-model="passwd_before" required></p>
+                <p  v-if="show_1">输入原始密码：<input type="password" placeholder="在这里输入上一个密码" v-model="passwd_before"></p>
                 <p v-if="show_1">输入新密码：<input type="password" v-model="passwd_1"></p>
                 <p v-if="show_1">输入确认密码：<input type="password" v-model="passwd_2"></p>
                 <p v-if="show_1">输入新昵称：<input type="text" v-model="user.nickname"></p>
@@ -125,6 +204,19 @@
                         alert(resp.data)
                     })
                 }
+            },
+            toggleForm() {
+                this.show_1 = !this.show_1;
+                if (this.show_1) {
+                    this.passwd_before = '';
+                    this.passwd_1 = null;
+                    this.passwd_2 = null;
+                }
+            },
+            logout(){
+                axios.post("/ame/logout").then(resp=>{
+                    location.href='login'
+                })
             }
         }
     })
