@@ -51,7 +51,7 @@ public class animeController {
         Anime anime1 = animeMapper.selectById(id);
         ArrayList<Anime> arrayList = new ArrayList<>();
         for(Anime anime : animeMapper.selectList(new QueryWrapper<Anime>().le("anime_id", 20000))) {
-            if(JaccardSimilarity.calculateJaccardSimilarity(anime1.getTitle(), anime.getGenre())>0.1){
+            if(JaccardSimilarity.calculateJaccardSimilarity(anime1.getGenre(), anime.getGenre())>0.75){
                 arrayList.add(anime);
             }
             if(arrayList.size()>=3) {
